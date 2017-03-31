@@ -11,14 +11,14 @@ The aim of this project is to:
 
 1. **Add native Python Interface for Data retriever:** Currently, if a python user wants to work with a dataset, the user has to download it using command line interface. After obtaining the data locally, the user can import that data, preferably into a data frame.  
 The goal of this project is to extend the Data retriever so that users can interface with the tool using python. This will allow users to directly fetch any dataset using the Data retriever package from within python. For example
-    ```
+    ```python
       import retriever
       Dataframe = retriever.fetch(‘iris’,’csv’)       # Dataframe is a pandas dataframe object
     ```
 
 2.  **Create a Julia Interface for the Data retriever** : With the increasing popularity of Julia among Data analysts, it has become very important for us provide Data retriever support in Julia. We would like to create CLI wrapper for Julia similar to [what we have for R language](https://github.com/ropensci/rdataretriever).  
 This would allow Julia users to use Data retriever package functionality from within Julia. For example
-    ```
+    ```julia
       using retriever
       using DataFrames
       retriever.datasets() # list all available datasets
