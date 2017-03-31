@@ -11,14 +11,14 @@ The aim of this project is to:
 
 1. **Add native Python Interface for Data retriever:** Currently, if a python user wants to work with a dataset, the user has to download it using command line interface. After obtaining the data locally, the user can import that data, preferably into a data frame.  
 The goal of this project is to extend the Data retriever so that users can interface with the tool using python. This will allow users to directly fetch any dataset using the Data retriever package from within python. For example
-    ```
+    ```python
       import retriever
       Dataframe = retriever.fetch(‘iris’,’csv’)       # Dataframe is a pandas dataframe object
     ```
 
 2.  **Create a Julia Interface for the Data retriever** : With the increasing popularity of Julia among Data analysts, it has become very important for us provide Data retriever support in Julia. We would like to create CLI wrapper for Julia similar to [what we have for R language](https://github.com/ropensci/rdataretriever).  
 This would allow Julia users to use Data retriever package functionality from within Julia. For example
-    ```
+    ```julia
       using retriever
       using DataFrames
       retriever.datasets() # list all available datasets
@@ -47,7 +47,7 @@ This task would involve:
   * *\_init_.py* file in current  Data retriever module exposes a lot of functionality that we don’t want, when imported in python. This can cause problems with python Interface that we want to create.
 
   * Similarly, if we create a new module *interface.py*, adding all new functionality in this module and exposing it in *\_init_.py*, we might get a case of circular dependency.
-    ```
+    ```python
     # in  _init_.py,  to expose scriptlist function to users
     from retriever.interface import scriptlist
 
@@ -58,31 +58,31 @@ This task would involve:
     _init_.py => interface.scriptlist => _init_.py’s  SCRIPT_LIST
     ```
     So to resolve above mentioned problems, we would create a new module *initializer.py,* move all functions present in*\_init_.py* file to initializer.py and import it in *\_init_.py* file.
-    ```
+    ```python
     from retriever.initializer import *
     ```
 
 3. Creating a new module *interface.py* where all the functionality needed for python Interface will be implemented. All required functions will be exposed to users, by importing them in _init_.py file. Some Key functions to be implemented in this module are:
 
   * Install: This function will be used to install a dataset specified by user to local databases or a csv/json/XML file.
-    ```
+    ```python
     def install(dataset_name, backend='csv', conn_file=None, db_file=None, debug=False, not_cached=False):
       ```
 
   * Download: This function directly downloads data files with no processing, allowing downloading of  non-tabular data.
-    ```
+    ```python
     def download(dataset_name, path='.', sub_dir=False):
       ```
 
   * Fetch: This function installs a dataset, load that dataset into a pandas dataframe and return the dataframe object.
-    ```
+    ```python
     def fetch(dataset_name, backend='csv', conn_file=None, db_file=None, debug=False, not_cached=False):
       ```
 
   As suggested by Core Developers, it would be a great idea to implement fetch function such that instead of loading all datasets into a csv file and then moving it to dataframe(as currently implemented in [R package](https://github.com/ropensci/rdataretriever)), we should load data directly from the database into a Dataframe.
 
   We can use SQLAlchemy to do so:
-  ```
+  ```python
   from sqlalchemy import create_engine
   import pandas as pd
   .....
@@ -93,29 +93,29 @@ This task would involve:
   ```
 
   * For sqlite:
-    ```
+    ```python
     if(backend=='sqlite'):
       db_engine = create_engine('sqlite:////'+db_file)
       #  db_file is a configuration file for sqlite
       ```
 
   * For postgres:
-    ```
+    ```python
     if(backend=='postgres’'):
       db_engine = create_engine("postgresql+psycopg2://"+user+ ":"+password + "@"+host+":”+port+"/"+db_name)
       ```
   * For mysql:
-    ```
+    ```python
     if(backend=='mysql'):
       db_engine =create_engine("mysql+pymysql://"+user+ ":"+password+"@"+host+"/"+db_name)
       ```
   * For csv:
-    ```
+    ```python
     if(backend=='csv'):
       return pd.read_csv(file_name)
       ```
   * For JSON:
-    ```
+    ```python
     if(backend=='json'):
       return pd.read_json(file_name)
       ```
@@ -137,20 +137,20 @@ This task would involve:
 
 2. Making a Julia package as a Github project, whose structure could be:
 
-    ```
+    ```julia
       retriever/                                 # this is retriever package
         src/                                     # this is the subdirectory containing the source
           retriever.jl                           # this is the main file/module
             module retriever                     # inside this file, declare the module name
-              using DataFrames                   # using Dataframe packages
-              export install, fetch, datasets    # export some functions of this package
-              function fetch(...)                # function definition
-              ......
+            using DataFrames                     # using Dataframe packages
+            export install, fetch, datasets      # export some functions of this package
+            function fetch(...)                  # function definition
+            ......
             end
       ```
 
 3. Creating a Data retriever module in this package, all the functionality related to Julia Interface for Data retriever will be implemented in this module.
-    ```
+    ```julia
     module retriever
     using DataFrames
     export install, fetch, datasets
@@ -162,17 +162,17 @@ This task would involve:
 4. Some of the Key functions to be made in this module are:
 
   * Install : This function downloads a dataset in a relational database or an XML/CSV/JSON file.
-    ```
+    ```julia
     function install(dataset, connection; db_file= nothing, conn_file= nothing, data_dir='.', log_dir= nothing, debug= false, not_cached= false)
     ```
 
   * Fetch: This function loads a dataset in a DataFrame object and returns it.
-    ```
+    ```julia
     function fetch(dataset; log_dir=nothing, debug=false, not_cached=false)
     ```
 
   * Download: This function downloads non-tabular data.
-    ```
+    ```julia
     function download(dataset, path='.', sub_dir=false, log_dir=nothing)
     ```
 
@@ -306,7 +306,7 @@ Adding native Python Interface and a Julia wrapper for Data retriever CLI would 
 
 
 | Name     | Kapil Kumar                                            |
-|----------|--------------------------------------------------------|
+|----------|:------------------------------------------------------:|
 | Branch   | Computer Science and Engineering                       |
 | Institute| National Institute of Technology, Delhi                |
 | Email    | kapilkd13@gmail.com , 141100043@nitdelhi.ac.in         |
