@@ -3,22 +3,22 @@
 
 ### **Abstract**
 
-The Data retriever provides a command Line Interface in python and a CLI wrapper in R that automates the process of finding, cleaning, and standardizing  publicly available datasets. It then stores this data in a relational database or in a csv/Json/XML file.
+The Data retriever provides a Command Line Interface in python and a CLI wrapper in R that automates the process of finding, cleaning, and standardizing publicly available datasets. It then stores this data in a relational database or in a csv/JSON/XML file.
 
-Data Scientists working in python and Julia, constantly use the Data retriever tool to import datasets. This makes it important for us to provide a native Interface for Data retriever Tool in Python and a Command Line wrapper in Julia.
+Data scientists working in python and Julia constantly use the Data retriever tool to import datasets. This makes it important for us to provide a native interface for the Data Retriever Tool in Python and a Command Line wrapper in Julia.
 
 The aim of this project is to:
 
 1. **Add native Python Interface for Data retriever:** Currently, if a python user wants to work with a dataset, the user has to download it using command line interface. After obtaining the data locally, the user can import that data, preferably into a data frame.  
 The goal of this project is to extend the Data retriever so that users can interface with the tool using python. This will allow users to directly fetch any dataset using the Data retriever package from within python. For example
-    ```
+    ```python 
       import retriever
       Dataframe = retriever.fetch(‘iris’,’csv’)       # Dataframe is a pandas dataframe object
     ```
 
 2.  **Create a Julia Interface for the Data retriever** : With the increasing popularity of Julia among Data analysts, it has become very important for us provide Data retriever support in Julia. We would like to create CLI wrapper for Julia similar to [what we have for R language](https://github.com/ropensci/rdataretriever).  
 This would allow Julia users to use Data retriever package functionality from within Julia. For example
-    ```
+    ```julia
       using retriever
       using DataFrames
       retriever.datasets() # list all available datasets
@@ -32,12 +32,12 @@ This would allow Julia users to use Data retriever package functionality from wi
 
 This project can be divided into 2 parts:
 
-* **Adding  native Python Interface for Data retriever**.
+* **Adding a native Python Interface for Data retriever**.
 
 * **Creating a Julia Interface for the Data retriever.**
 
 
-### **Adding  native Python Interface for Data retriever**
+### **Adding a native Python Interface for Data retriever**
 
 This task would involve:
 
@@ -47,7 +47,7 @@ This task would involve:
   * *\_init_.py* file in current  Data retriever module exposes a lot of functionality that we don’t want, when imported in python. This can cause problems with python Interface that we want to create.
 
   * Similarly, if we create a new module *interface.py*, adding all new functionality in this module and exposing it in *\_init_.py*, we might get a case of circular dependency.
-    ```
+    ```python
     # in  _init_.py,  to expose scriptlist function to users
     from retriever.interface import scriptlist
 
@@ -58,31 +58,32 @@ This task would involve:
     _init_.py => interface.scriptlist => _init_.py’s  SCRIPT_LIST
     ```
     So to resolve above mentioned problems, we would create a new module *initializer.py,* move all functions present in*\_init_.py* file to initializer.py and import it in *\_init_.py* file.
-    ```
+    
+    ```python
     from retriever.initializer import *
     ```
 
 3. Creating a new module *interface.py* where all the functionality needed for python Interface will be implemented. All required functions will be exposed to users, by importing them in _init_.py file. Some Key functions to be implemented in this module are:
 
   * Install: This function will be used to install a dataset specified by user to local databases or a csv/json/XML file.
-    ```
+    ```python
     def install(dataset_name, backend='csv', conn_file=None, db_file=None, debug=False, not_cached=False):
       ```
 
   * Download: This function directly downloads data files with no processing, allowing downloading of  non-tabular data.
-    ```
+    ```python
     def download(dataset_name, path='.', sub_dir=False):
       ```
 
   * Fetch: This function installs a dataset, load that dataset into a pandas dataframe and return the dataframe object.
-    ```
+    ```python
     def fetch(dataset_name, backend='csv', conn_file=None, db_file=None, debug=False, not_cached=False):
       ```
 
   As suggested by Core Developers, it would be a great idea to implement fetch function such that instead of loading all datasets into a csv file and then moving it to dataframe(as currently implemented in [R package](https://github.com/ropensci/rdataretriever)), we should load data directly from the database into a Dataframe.
 
   We can use SQLAlchemy to do so:
-  ```
+  ```python
   from sqlalchemy import create_engine
   import pandas as pd
   .....
@@ -93,29 +94,29 @@ This task would involve:
   ```
 
   * For sqlite:
-    ```
+    ```python
     if(backend=='sqlite'):
       db_engine = create_engine('sqlite:////'+db_file)
       #  db_file is a configuration file for sqlite
       ```
 
   * For postgres:
-    ```
+    ```python
     if(backend=='postgres’'):
       db_engine = create_engine("postgresql+psycopg2://"+user+ ":"+password + "@"+host+":”+port+"/"+db_name)
       ```
   * For mysql:
-    ```
+    ```python
     if(backend=='mysql'):
       db_engine =create_engine("mysql+pymysql://"+user+ ":"+password+"@"+host+"/"+db_name)
       ```
   * For csv:
-    ```
+    ```python
     if(backend=='csv'):
       return pd.read_csv(file_name)
       ```
   * For JSON:
-    ```
+    ```python
     if(backend=='json'):
       return pd.read_json(file_name)
       ```
@@ -150,7 +151,7 @@ This task would involve:
       ```
 
 3. Creating a Data retriever module in this package, all the functionality related to Julia Interface for Data retriever will be implemented in this module.
-    ```
+    ```julia
     module retriever
     using DataFrames
     export install, fetch, datasets
@@ -162,17 +163,17 @@ This task would involve:
 4. Some of the Key functions to be made in this module are:
 
   * Install : This function downloads a dataset in a relational database or an XML/CSV/JSON file.
-    ```
+    ```julia
     function install(dataset, connection; db_file= nothing, conn_file= nothing, data_dir='.', log_dir= nothing, debug= false, not_cached= false)
     ```
 
   * Fetch: This function loads a dataset in a DataFrame object and returns it.
-    ```
+    ```julia
     function fetch(dataset; log_dir=nothing, debug=false, not_cached=false)
     ```
 
   * Download: This function downloads non-tabular data.
-    ```
+    ```julia
     function download(dataset, path='.', sub_dir=false, log_dir=nothing)
     ```
 
@@ -186,11 +187,11 @@ I have developed a prototype for "[Julia Interface for Data retriever](https://g
 
 #### **May 1st - May 29th, Community Bonding Period**
 
-* Getting completely familiar with Data Retriever package and R Data retriever’s codebase.
+* Getting completely familiar with Data Retriever package and R Data Retriever’s codebase.
 
 * Getting familiar with package structure in Julia.
 
-* Discussing details of Timely reviews of my progress with my mentors.
+* Discussing details of timely reviews of my progress with my mentors.
 
 #### **May 30th - June 5th, Week 1**
 
@@ -208,23 +209,23 @@ I have developed a prototype for "[Julia Interface for Data retriever](https://g
 
 #### **June 13th - June 19th, Week 3**
 
-* Implementing complete functionality of the interface.py module.
+* Implement complete functionality of the interface.py module.
 
 #### **June 20th - June 25th, Week 4,  End of Phase 1**
 
-* Adding unit tests in our existing test suite to test the new functionality.
+* Add unit tests in our existing test suite to test the new functionality.
 
-* Thoroughly testing our code to make sure it does not regress. We will make sure that all tests in our test suite pass.
+* Thoroughly test our code to make sure it does not regress. We will make sure that all tests in our test suite pass.
 
 #### **June 26 - July 2nd, Week 5,  Begin of Phase 2**
 
-* Code cleaning, Documentation and Integration of Code.
+* Code cleaning, documentation and integration of code.
 
 * Packing and distributing our python interface package.
 
 #### **July 3rd - July 9th, Week 6**
 
-* Defining the structure of Data retriever module in Julia.
+* Defining the structure of Data Retriever module in Julia.
 
 * Making a clear outline of its functions, their arguments and return type.
 
@@ -234,13 +235,13 @@ I have developed a prototype for "[Julia Interface for Data retriever](https://g
 
 #### **July 17th - July 23rd, Week 8,  End of Phase 2**
 
-* Creating Test suite for Julia Interface.
+* Creating test suite for the Julia Interface.
 
-* Testing and Bug removal.
+* Testing and bug removal.
 
 #### **July 24th - July 30th, Week 9,  Begin of Phase 3**
 
-* Code Cleaning. Documenting User Guide, Readme, License etc.
+* Code cleaning. Documenting user guide, Readme, license etc.
 
 * Releasing **Julia Interface for Data retriever** package for public use.
 
@@ -248,9 +249,9 @@ I have developed a prototype for "[Julia Interface for Data retriever](https://g
 
 During this week I would like to work on:
 
-* Adding debug, not-cached option in [R Data retriever](https://github.com/ropensci/rdataretriever).
+* Adding debug, not-cached option in [R Data Retriever](https://github.com/ropensci/rdataretriever).
 
-* Improving the functionality of the Fetch function in R Data retriever, to directly fetch from database instead of downloading to a csv file and then loading.
+* Improving the functionality of the Fetch function in R Data Retriever, to directly fetch from database instead of downloading to a csv file and then loading.
 
 * (optionally) Adding appropriate type stubs to allow continuous static type checking by tools like mypy.
 
@@ -258,7 +259,7 @@ During this week I would like to work on:
 
 * A Buffer of two weeks has been kept for any unpredictable delay.
 
-* I would like to use this period to solve bugs and add features to existing Data retriever implementation.
+* I would like to use this period to solve bugs and add features to existing Data Retriever implementation.
 
 #### **August 21st - August 29th, Final Week**
 
@@ -266,7 +267,7 @@ During this week I would like to work on:
 
 #### **Future work**
 
-* After the end of GSOC 17, I would remain associated with Data retriever Team and would like to contribute on issues like "*better logging of errors or warning using _logging and allowing debug/quiet mode*" etc.
+* After the end of GSOC 17, I would remain associated with Data Retriever Team and would like to contribute on issues like "*better logging of errors or warning using _logging and allowing debug/quiet mode*" etc.
 
 ### **Deliverables**
 
@@ -278,7 +279,7 @@ At the end of this Project:
 
 ### **Development Experience**
 
-I am familiar with Data retriever’s source flow and have contributed few bug fixes and feature additions:
+I am familiar with Data Retriever’s source flow and have contributed a few bug fixes and feature additions:
 
 * [#850](https://github.com/weecology/retriever/pull/850) Bug fix: fixing edit_json and delete_json functions
 
@@ -297,7 +298,7 @@ I am new to the open source community and have started contributing to open sour
 
 ### **Why this project?**
 
-I first heard about Data retriever tool from my senior who used it in his research. Later, when I was viewing GSOC organization’s project ideas, I saw  "*Adding Python Interface and Command Line wrapper for Data retriever in Julia*" listed there.  
+I first heard about Data Retriever tool from my senior who used it in his research. Later, when I was viewing GSOC organization’s project ideas, I saw  "*Adding Python Interface and Command Line wrapper for Data retriever in Julia*" listed there.  
 Adding native Python Interface and a Julia wrapper for Data retriever CLI would give access to the tools provided by the Data retriever in three major open source languages- R, Julia and Python for data oriented computing.
 
 ### **Appendix**
