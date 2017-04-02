@@ -11,7 +11,7 @@ The aim of this project is to:
 
 1. **Add native Python Interface for Data retriever:** Currently, if a python user wants to work with a dataset, the user has to download it using command line interface. After obtaining the data locally, the user can import that data, preferably into a data frame.  
 The goal of this project is to extend the Data retriever so that users can interface with the tool using python. This will allow users to directly fetch any dataset using the Data retriever package from within python. For example
-    ```python 
+    ```python
       import retriever
       Dataframe = retriever.fetch(‘iris’,’csv’)       # Dataframe is a pandas dataframe object
     ```
@@ -58,7 +58,6 @@ This task would involve:
     _init_.py => interface.scriptlist => _init_.py’s  SCRIPT_LIST
     ```
     So to resolve above mentioned problems, we would create a new module *initializer.py,* move all functions present in*\_init_.py* file to initializer.py and import it in *\_init_.py* file.
-    
     ```python
     from retriever.initializer import *
     ```
@@ -138,15 +137,15 @@ This task would involve:
 
 2. Making a Julia package as a Github project, whose structure could be:
 
-    ```
+    ```julia
       retriever/                                 # this is retriever package
         src/                                     # this is the subdirectory containing the source
           retriever.jl                           # this is the main file/module
             module retriever                     # inside this file, declare the module name
-              using DataFrames                   # using Dataframe packages
-              export install, fetch, datasets    # export some functions of this package
-              function fetch(...)                # function definition
-              ......
+            using DataFrames                     # using Dataframe packages
+            export install, fetch, datasets      # export some functions of this package
+            function fetch(...)                  # function definition
+            ......
             end
       ```
 
@@ -307,7 +306,7 @@ Adding native Python Interface and a Julia wrapper for Data retriever CLI would 
 
 
 | Name     | Kapil Kumar                                            |
-|----------|--------------------------------------------------------|
+|----------|:------------------------------------------------------:|
 | Branch   | Computer Science and Engineering                       |
 | Institute| National Institute of Technology, Delhi                |
 | Email    | kapilkd13@gmail.com , 141100043@nitdelhi.ac.in         |
